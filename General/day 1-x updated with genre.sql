@@ -1,3 +1,44 @@
+---- UPDATED -----
+
+
+with stage0 as (
+       select distinct 
+       reporting_series_nm,
+       min(video_air_dt) prem_date,
+       FROM `ent_vw.multi_channels_summary_day` cs
+       where day_dt between '2021-03-04' and '2022-05-30'
+       AND site_country_cd = 'US'
+	AND app_nm = 'CBS AA/P+'
+       and reporting_content_type_cd NOT IN ('CLIP')
+	AND LOWER(subscription_state_desc) IN ("trial", "sub", "discount offer")
+       and source_desc = 'CBS Platforms'
+group by 1
+)
+
+SELECT distinct 
+day_dt,
+       source_desc,
+       cs.reporting_series_nm,
+       min(video_air_dt),
+       SUM(streams_cnt) 
+FROM `ent_vw.multi_channels_summary_day` cs left join stage0 s on cs.reporting_series_nm = s.reporting_series_nm
+WHERE day_dt BETWEEN prem_date and (DATE_ADD(prem_date, INTERVAL 63 DAY))
+	AND site_country_cd = 'US'
+	AND app_nm = 'CBS AA/P+'
+       and reporting_content_type_cd NOT IN ('CLIP')
+	AND LOWER(subscription_state_desc) IN ("trial", "sub", "discount offer")
+       and cs.reporting_series_nm in ('1883','Halo', 'Jackass Forever', 'Mayor of Kingstown', 'Clifford the Big Red Dog', 'A Quiet Place Part II')
+       --and source_desc = 'CBS Platforms'
+GROUP BY 1,2,3
+order by 1 desc
+
+
+-------------
+
+-- do not use--
+
+
+
 select
   case when reporting_series_nm in ("Paramount+ Movies","CBS All Access Movies") then replace(replace(video_title," (Trailer)",""),"Paramount+ Movies - ","")
                   when reporting_series_nm in ("Paramount+ Trailers") then replace(video_title," (Trailer)","")
