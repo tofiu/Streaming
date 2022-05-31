@@ -3,11 +3,13 @@
 
 with stage0 as (
        select distinct 
-       video_series_nm reporting_series_nm,
+       reporting_series_nm,
        min(video_air_dt) prem_date,
-       FROM ent_summary.ab_aa_originals_new
+       FROM `ent_vw.multi_channels_summary_day` cs
        where day_dt between '2021-03-04' and '2022-05-30'
        AND site_country_cd = 'US'
+	AND app_nm = 'CBS AA/P+'
+       and reporting_content_type_cd NOT IN ('CLIP')
 	AND LOWER(subscription_state_desc) IN ("trial", "sub", "discount offer")
 group by 1
 )
@@ -17,7 +19,7 @@ SELECT distinct
        cs.reporting_series_nm,
        prem_date,
        max(day_dt) end_date,
-       SUM(streams_cnt) streams
+       SUM(streams_cnt) 
 FROM `ent_vw.multi_channels_summary_day` cs left join stage0 s on cs.reporting_series_nm = s.reporting_series_nm
 WHERE day_dt BETWEEN prem_date and (DATE_ADD(prem_date, INTERVAL 64 DAY))
 	AND site_country_cd = 'US'
@@ -28,7 +30,6 @@ WHERE day_dt BETWEEN prem_date and (DATE_ADD(prem_date, INTERVAL 64 DAY))
        --and source_desc = 'CBS Platforms'
 GROUP BY 1,2,3
 order by 1 desc
-
 
 -------------
 
