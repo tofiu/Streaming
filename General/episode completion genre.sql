@@ -12,6 +12,8 @@ WHERE
     AND v69 IS NOT NULL
     and genre in ('Reality')
     and LOWER(subscription_state_desc) IN ("trial","sub","discount offer")
+    and reporting_series_nm not in ("Live TV","Live Local TV")
+    and reporting_content_type_cd not in ('CLIP')
   GROUP BY
     1,2)
 select 
