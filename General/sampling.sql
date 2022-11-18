@@ -64,6 +64,32 @@ AND subscription_state_desc IS NULL
 GROUP BY 1, 2,3,4
 ;
 
+#roku channels
+
+SELECT
+    subscription_state_desc,
+    source_desc,
+    video_series_nm,
+    video_title,
+    count(distinct post_visitor_id) as uv,
+        SUM(streams_cnt) AS streams,
+        SUM(video_content_duration_sec_qty)/60 AS Minutes
+FROM `ent_vw.multi_channel_detail_day` cs
+WHERE day_dt between '2022-10-05' and '2022-10-11' 
+and video_series_nm = "The Real Love Boat"
+and video_season_nbr = '1'
+and video_episode_nbr = '1'
+AND site_country_cd = 'US'
+AND app_nm = 'CBS AA/P+'
+AND streams_cnt > 0
+AND video_content_duration_sec_qty > 0
+AND source_desc IN ("Roku Channel")
+AND subscription_state_desc IS NULL
+-- AND (subscription_state_desc) NOT IN ("trial", "sub", "discount offer")
+GROUP BY 1, 2,3,4
+
+;
+
 # Amazon Channels
 # Only use "FREE" for offer_group_desc
 SELECT
