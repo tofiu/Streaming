@@ -103,7 +103,7 @@ sum(stream_min_qty) AS MINUTES,
 FROM `i-dss-ent-data.ent_vw.amazon_channel_vod_usage_day` 
 where day_dt between '2022-09-07' and '2022-09-13' 
 and series_movie_nm = "Ink Master"
-AND offer_group_desc = 'FREE'
+AND (offer_group_desc = 'FREE' or offer_group_desc = 'PRIME')
 and country_cd = "US"
 group by 1,2,3
 ;
