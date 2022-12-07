@@ -1,13 +1,13 @@
 SELECT distinct 
-genre,
-brand_nm1,
 reporting_series_nm,
+genre,
+min(brand_nm1),
 video_season_nbr,
 sum(content_hours)
 
 from  (
 SELECT distinct
-genre,
+case when genre is null then 'Others' else genre end genre,
 CASE 
 		WHEN (
 		(
@@ -264,4 +264,4 @@ max(a.length_in_seconds)/3600 content_hours
 FROM  ent_vw.mpx_video_content_enhanced a left join `i-dss-ent-data.temp_dj.show_genre_mapping_wo_live` b on lower(trim(a.reporting_series_nm))=lower(trim(b.show)) 
 where reporting_content_type_cd in ("MOVIE","FEP") and video_available_dt <='2022-11-30' group by 1,2,3,4,5) where video_season_nbr is not null 
 and reporting_series_nm != '-' 
-group by 1,2,3,4
+group by 1,2,4
